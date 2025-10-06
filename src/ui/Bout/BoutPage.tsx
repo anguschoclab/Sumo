@@ -3,7 +3,6 @@ import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { Card } from '@/ui/primitives'
-
 export default function BoutPage(){
   const { eventId } = useParams()
   const ev = useSelector((s:any)=> (s.events||[]).find((e:any)=> e.id===eventId))

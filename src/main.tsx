@@ -6,7 +6,8 @@ import { BrowserRouter } from 'react-router-dom'
 import './styles/global.css'
 import App from './App'
 import { store } from './store'
-
+import { registerSW } from './pwa/registerSW'
+registerSW()
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>

@@ -1,6 +1,5 @@
 
 import React from 'react'
-
 class ErrorBoundary extends React.Component<{children:React.ReactNode},{error:Error|null}>{
   state={ error: null as Error|null }
   static getDerivedStateFromError(error:Error){ return { error } }
@@ -11,7 +10,6 @@ class ErrorBoundary extends React.Component<{children:React.ReactNode},{error:Er
     return this.props.children
   }
 }
-
 export default function AppShell({ children }:{children:React.ReactNode}){
   return (
     <React.Suspense fallback={<div className="p-6 text-sm">Loading…</div>}>
