@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BashoTraitsMatrix",
+  "description": "Schema for AI traits, style biases, and coach/heya influence vectors.",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "seeded": {
+      "type": "boolean"
+    },
+    "traits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "axis": {
+            "type": "string",
+            "enum": [
+              "Discipline",
+              "Aggression",
+              "Creativity",
+              "Endurance",
+              "Balance",
+              "Technicality"
+            ]
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "min",
+              "max"
+            ]
+          },
+          "effects": {
+            "type": "object",
+            "description": "Multipliers applied in bout engine; 1.0 = neutral",
+            "properties": {
+              "tachiAi_initiative": {
+                "type": "number"
+              },
+              "grip_seek": {
+                "type": "number"
+              },
+              "oshi_bias": {
+                "type": "number"
+              },
+              "yotsu_bias": {
+                "type": "number"
+              },
+              "pulldown_risk": {
+                "type": "number"
+              },
+              "stamina_regen": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "axis",
+          "range"
+        ]
+      }
+    },
+    "heyaInfluences": {
+      "type": "array",
+      "description": "Stable/Oyakata style fingerprints",
+      "items": {
+        "type": "object",
+        "properties": {
+          "heyaId": {
+            "type": "string"
+          },
+          "coachStyle": {
+            "type": "string",
+            "enum": [
+              "Oshi",
+              "Yotsu",
+              "Balanced",
+              "Unorthodox"
+            ]
+          },
+          "trainingFocus": {
+            "type": "object",
+            "properties": {
+              "discipline": {
+                "type": "number"
+              },
+              "power": {
+                "type": "number"
+              },
+              "technique": {
+                "type": "number"
+              },
+              "endurance": {
+                "type": "number"
+              }
+            }
+          },
+          "kimariteBias": {
+            "type": "object",
+            "description": "Relative preference for families of kimarite",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "heyaId",
+          "coachStyle"
+        ]
+      }
+    }
+  },
+  "required": [
+    "version",
+    "traits"
+  ]
+}

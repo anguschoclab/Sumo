@@ -1,0 +1,32 @@
+{
+  "version": "0.3.6",
+  "seasonal": {
+    "Hatsu": [
+      "New Year Resolve: rookies look to break through in the cold of Tokyo."
+    ],
+    "Haru": [
+      "Spring Surges: veterans retool, contenders bloom in Osaka."
+    ],
+    "Natsu": [
+      "Tokyo Heat: stamina decides late brawls in sticky afternoons."
+    ],
+    "Nagoya": [
+      "Mid-summer grind: injuries test depth across the banzuke."
+    ],
+    "Aki": [
+      "Autumn resets: spoilers abound as sanyaku reshuffle."
+    ],
+    "Kyushu": [
+      "Final push: yokozuna legacies and ozeki runs on the line."
+    ]
+  },
+  "rivalry": {
+    "generic": [
+      "{east} and {west} meet again; edge: {edge} per last five bouts ({eastWins}-{westWins}).",
+      "Bad blood simmers: {east} called {west} \u2018predictable\u2019 after their last clash."
+    ]
+  },
+  "notations": {
+    "resultLine": "{winner} def. {loser} ({kimarite}) \u2014 {context}"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "version": "0.3.6",
+  "prompts": {
+    "askPlayerName": true,
+    "askHeyaName": true
+  },
+  "tutorialFlags": {
+    "showControlsHint": true,
+    "showTrainingBasics": true,
+    "showBashoFlow": true
+  },
+  "defaults": {
+    "startingSeed": "BASHO-SEED-0001",
+    "difficulty": "Balanced"
+  }
+}
