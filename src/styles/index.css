@@ -1,0 +1,36 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *:focus-visible { @apply outline-accent outline-2 outline; outline-offset: 2px; }
+}
+
+@layer components {
+  .panel { @apply bg-panel/90 backdrop-blur border border-white/10 rounded-2xl p-4 shadow-soft; }
+  .btn { @apply inline-flex items-center justify-center rounded-lg border border-white/10 px-4 py-2 transition; }
+  .btn:hover { @apply bg-white/5; }
+  .btn.primary { @apply bg-accent text-white border-transparent hover:bg-indigo-600; }
+  .btn.ghost { @apply bg-transparent border-white/10 text-text hover:bg-white/5; }
+
+  .kpi { @apply grid gap-3 md:grid-cols-3; }
+  .kpi .box { @apply rounded-xl border border-white/10 p-3; }
+  .kpi .label { @apply text-xs text-muted; }
+  .kpi .value { @apply text-lg font-bold; }
+
+  .table { @apply w-full border-collapse; }
+  .table th, .table td { @apply text-left text-sm border-b border-white/10 py-2; }
+
+  .press { @apply bg-gradient-to-b from-amber-500/10 to-indigo-500/10; }
+
+  .dohyo-frame { @apply relative rounded-[24px] border-2 border-rope bg-dohyo/90 shadow-soft; }
+  .dohyo-ropes::before, .dohyo-ropes::after { content:""; @apply absolute left-0 right-0 h-1 bg-rope rounded-full; }
+  .dohyo-ropes::before { top: 14px; } .dohyo-ropes::after { bottom: 14px; }
+
+  .mw-indigo { --mw: #4f46e5; }
+  .mw-emerald { --mw: #10b981; }
+  .mw-rose { --mw: #f43f5e; }
+  .mw-gold { --mw: #f59e0b; }
+  .mw { border-color: color-mix(in oklab, var(--mw) 50%, transparent); box-shadow: inset 0 0 0 2px var(--mw); }
+}
