@@ -1,0 +1,6 @@
+
+Sumo — Vite Baseline v0.3.2 (Sprint K)
+--------------------------------------
+- Adds Basho scaffolding: yearly schedule, standings view, match UI shell
+- Keeps FTUE, HUD controls, and engine APIs stable
+- Works offline (no network); local dev: `npm i && npm run dev`
