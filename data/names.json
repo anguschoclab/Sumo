@@ -1,0 +1,58 @@
+{
+  "family": [
+    "Tanaka",
+    "Sato",
+    "Suzuki",
+    "Takahashi",
+    "Kobayashi",
+    "Watanabe",
+    "Ito",
+    "Yamamoto",
+    "Nakamura",
+    "Kato",
+    "Yoshida"
+  ],
+  "given": [
+    "Daichi",
+    "Haruto",
+    "Ren",
+    "Sora",
+    "Minato",
+    "Yuto",
+    "Itsuki",
+    "Riku",
+    "Hinata",
+    "Keita",
+    "Ryo"
+  ],
+  "kanjiPrefixes": [
+    "朝",
+    "白",
+    "若",
+    "高",
+    "海",
+    "貴",
+    "翔",
+    "北",
+    "旭",
+    "千",
+    "東",
+    "玉",
+    "錦"
+  ],
+  "kanjiSuffixes": [
+    "龍",
+    "山",
+    "乃",
+    "桜",
+    "海",
+    "鵬",
+    "丸",
+    "川",
+    "岳",
+    "嵐",
+    "富士",
+    "星",
+    "虎"
+  ]
+}

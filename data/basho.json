@@ -1,0 +1,32 @@
+[
+  {
+    "id": "Hatsu",
+    "month": 1,
+    "city": "Tokyo"
+  },
+  {
+    "id": "Haru",
+    "month": 3,
+    "city": "Osaka"
+  },
+  {
+    "id": "Natsu",
+    "month": 5,
+    "city": "Tokyo"
+  },
+  {
+    "id": "Nagoya",
+    "month": 7,
+    "city": "Nagoya"
+  },
+  {
+    "id": "Aki",
+    "month": 9,
+    "city": "Tokyo"
+  },
+  {
+    "id": "Kyushu",
+    "month": 11,
+    "city": "Fukuoka"
+  }
+]
