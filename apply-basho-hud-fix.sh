@@ -1,3 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "⚙️  Applying HUD reactivity fix…"
+
+# 1) Append nudgeWorld() to time.ts (idempotent: only if not present)
+TIME_FILE="src/engine/time.ts"
+if [ -f "$TIME_FILE" ] && ! grep -q "export function nudgeWorld" "$TIME_FILE"; then
+  cat >> "$TIME_FILE" <<'TS'
+
+// --- PATCH: world change helper (idempotent) ---
+// Ensures world updates always notify any subscribers/UIs.
+export function nudgeWorld(next: { year: number; month: number; week: number; day: number }) {
+  try {
+    // Prefer the official setter so all normal side effects fire.
+    // @ts-ignore
+    if (typeof setWorld === "function") setWorld({ ...next });
+
+    // Broadcast to any code listening via the DOM (safe, no-op in SSR).
+    if (typeof window !== "undefined" && "dispatchEvent" in window) {
+      window.dispatchEvent(new CustomEvent("world:change", { detail: { ...next } }));
+    }
+  } catch {
+    // Very defensive fallback for unusual bundling orders.
+    // @ts-ignore
+    const g: any = (typeof window !== "undefined" ? window : globalThis) as any;
+    if (typeof g.setWorld === "function") g.setWorld({ ...next });
+  }
+}
+TS
+  echo "• Appended nudgeWorld() to $TIME_FILE"
+else
+  echo "• Skipped time.ts (already has nudgeWorld or file missing)"
+fi
+
+# 2) Overwrite skip.ts to use nudgeWorld(...) and keep expected exports
+SKIP_FILE="src/engine/skip.ts"
+mkdir -p "$(dirname "$SKIP_FILE")"
+cat > "$SKIP_FILE" <<'TS'
 import { getWorld, nudgeWorld } from "./time";
 import { nextBashoStartAfter } from "./basho";
 
@@ -70,3 +109,7 @@ export function nextBasho(): void {
   _mode       = stopModes.NONE;
   _target     = null;
 }
+TS
+echo "• Wrote $SKIP_FILE"
+
+echo "✅ Done. Let Vite hot-reload or restart your dev server."

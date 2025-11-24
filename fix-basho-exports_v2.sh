@@ -1,3 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+echo "🔧 Patching src/engine/basho.ts to restore missing exports…"
+
+mkdir -p src/engine
+cat > src/engine/basho.ts <<'TS'
 // Minimal basho engine shim with the exports skip.ts & BashoPanel expect.
 // Replace with full implementation in later sprints.
 
@@ -100,3 +106,6 @@ export function getTorikumi(day?: number): Bout[] {
   if (!state.torikumi[d]) state.torikumi[d] = makeTorikumiForDay(d);
   return state.torikumi[d];
 }
+TS
+
+echo "✅ Patched src/engine/basho.ts"

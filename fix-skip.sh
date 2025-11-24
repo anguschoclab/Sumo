@@ -1,4 +1,12 @@
-import { getWorld, nudgeWorld } from "./time";
+#!/usr/bin/env bash
+set -euo pipefail
+
+FILE="src/engine/skip.ts"
+
+mkdir -p "$(dirname "$FILE")"
+
+cat > "$FILE" <<'TS'
+import { getWorld, setWorld } from "./time";
 import { nextBashoStartAfter } from "./basho";
 
 export const stopModes = {
@@ -16,8 +24,6 @@ let _target: { year: number; month: number; week: number; day: number } | null =
 export function isSkipping() { return _isSkipping; }
 export function isPaused()   { return _isPaused; }
 export function getStopMode(): StopMode { return _mode; }
-
-// Kept for HeaderBar.tsx compatibility
 export function setStopMode(mode: StopMode) {
   const values = Object.values(stopModes) as StopMode[];
   _mode = values.includes(mode) ? mode : stopModes.NONE;
@@ -28,9 +34,9 @@ function key(w: { year: number; month: number; week: number; day: number }) {
 }
 function reachedOrPast(a: any, b: any) { return key(a) >= key(b); }
 
-// Do NOT suppress side-effects; HUD must observe this.
+// IMPORTANT: do NOT suppress side-effects; HUD needs to observe this state change.
 function jumpTo(target: { year: number; month: number; week: number; day: number }) {
-  nudgeWorld({ ...target });
+  setWorld({ ...target });
 }
 
 export function pauseSkip()  { _isPaused = true; }
@@ -62,7 +68,7 @@ export function nextBasho(): void {
   _mode       = stopModes.BASHO_MONTH_DAY1;
   _target     = safeTarget;
 
-  // Single atomic jump that also broadcasts a 'world:change' event
+  // Single atomic jump triggers normal world listeners
   jumpTo(_target);
 
   _isSkipping = false;
@@ -70,3 +76,6 @@ export function nextBasho(): void {
   _mode       = stopModes.NONE;
   _target     = null;
 }
+TS
+
+echo "Patched $FILE"

@@ -1,0 +1,23 @@
+:root {
+  --bg: #0f1115;
+  --panel: #161a22;
+  --text: #eef1f7;
+  --muted: #96a0b5;
+  --accent: #ffcf33;
+  --ok: #26d07c;
+}
+html, body, #root { height: 100%; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background: var(--bg); color: var(--text); }
+.wrap { max-width: 980px; margin: 16px auto; padding: 0 16px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.panel { background: var(--panel); border: 1px solid #232838; border-radius: 10px; padding: 12px 14px; margin: 12px 0; }
+button {
+  background: #232838; color: var(--text); border: 1px solid #2c3245; padding: 8px 12px; border-radius: 8px; cursor: pointer;
+}
+button:hover { border-color: #3a425a; }
+select, input[type="checkbox"] {
+  background: #1c2030; color: var(--text); border: 1px solid #2c3245; padding: 6px 8px; border-radius: 8px;
+}
+.muted { color: var(--muted); }
+.accent { color: var(--accent); }
+.ok { color: var(--ok); }

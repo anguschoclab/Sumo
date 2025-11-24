@@ -1,72 +1,92 @@
-// SumoGame delta: ensure named exports `advanceDay` and `advanceWeek` exist.
-// This file is a compatibility layer. If your real engine/time already exists,
-// you can keep this as the canonical entry and delegate to globals/hooks if present.
+import { getWorld as _gw, setWorld as _sw } from "./store";
+import { progressBashoIfNeeded } from "./basho";
 
-type World = any;
+// Fallbacks if store functions aren't present early in boot.
+const getW =
+  _gw && typeof _gw === "function"
+    ? _gw
+    : () =>
+        ((window as any).__WORLD__ ||= {
+          year: 2025,
+          month: 1,
+          week: 1,
+          day: 1,
+        });
+const setW =
+  _sw && typeof _sw === "function"
+    ? _sw
+    : (nw: any) => ((window as any).__WORLD__ = nw);
 
-function getWorld(): World | undefined {
-  // Use engine singleton if present; else fall back to window.__WORLD__
-  const w = (globalThis as any).__getWorld;
-  if (typeof w === 'function') return w();
-  return (globalThis as any).__WORLD__;
+function normalize(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
 }
 
-function setWorld(nw: World) {
-  const s = (globalThis as any).__setWorld;
-  if (typeof s === 'function') return s(nw);
-  (globalThis as any).__WORLD__ = nw;
-}
-
-// Attempt to call an existing engine function by name; otherwise do nothing.
-function callIfExists(name: string, ...args: any[]) {
-  const g: any = globalThis as any;
-  const fn = g[name];
-  if (typeof fn === 'function') return fn(...args);
-  return undefined;
+function maybeProgressBasho() {
+  // Silence basho side-effects during atomic skips
+  if ((window as any).__SKIPPING__) return;
+  try {
+    progressBashoIfNeeded();
+  } catch {}
 }
 
 export function advanceDay(): void {
-  // Prefer real engine implementations if present
-  if (callIfExists('__ADVANCE_DAY') !== undefined) return;
-  if (callIfExists('advanceDay') !== undefined) return;
-
-  // Fallback: naive tick on world time
-  const w = getWorld();
-  if (!w) return;
-  w.time = w.time || { week: 1, day: 1 };
-  w.time.day = (w.time.day || 0) + 1;
-  if (w.time.day > 7) {
-    w.time.day = 1;
-    w.time.week = (w.time.week || 0) + 1;
+  const w = { ...getW() };
+  w.day += 1;
+  if (w.day > 7) {
+    w.day = 1;
+    w.week += 1;
   }
-  setWorld(w);
+  if (w.week > 4) {
+    w.week = 1;
+    w.month += 1;
+  }
+  if (w.month > 12) {
+    w.month = 1;
+    w.year += 1;
+  }
+  setW(w);
+  maybeProgressBasho();
 }
 
 export function advanceWeek(): void {
-  if (callIfExists('__ADVANCE_WEEK') !== undefined) return;
-  if (callIfExists('advanceWeek') !== undefined) return;
-
-  const w = getWorld();
-  if (!w) return;
-  w.time = w.time || { week: 1, day: 1 };
-  w.time.week = (w.time.week || 0) + 1;
-  w.time.day = 1;
-  setWorld(w);
+  const w = { ...getW() };
+  w.week += 1;
+  if (w.week > 4) {
+    w.week = 1;
+    w.month += 1;
+  }
+  if (w.month > 12) {
+    w.month = 1;
+    w.year += 1;
+  }
+  w.day = normalize(w.day || 1, 1, 7);
+  setW(w);
+  maybeProgressBasho();
 }
 
-// Optional helpers used by other modules can safely no-op here.
-// Re-export stubs so imports don't break if they exist.
-export function isBashoActive(): boolean {
-  // If a global decides, trust it
-  const x = callIfExists('isBashoActive');
-  if (typeof x === 'boolean') return x;
-  const w = getWorld();
-  return !!(w && w.basho && w.basho.active);
+export function getWorld() {
+  return getW();
+}
+export function setWorld(nw: any) {
+  return setW(nw);
 }
 
-export function progressBashoIfNeeded(): void {
-  if (callIfExists('progressBashoIfNeeded') !== undefined) return;
-  // no-op fallback
-}
+// --- PATCH: world change helper (idempotent) ---
+// Ensures world updates always notify any subscribers/UIs.
+export function nudgeWorld(next: { year: number; month: number; week: number; day: number }) {
+  try {
+    // Prefer the official setter so all normal side effects fire.
+    // @ts-ignore
+    if (typeof setWorld === "function") setWorld({ ...next });
 
-// You may add other passthrough exports here as needed.
+    // Broadcast to any code listening via the DOM (safe, no-op in SSR).
+    if (typeof window !== "undefined" && "dispatchEvent" in window) {
+      window.dispatchEvent(new CustomEvent("world:change", { detail: { ...next } }));
+    }
+  } catch {
+    // Very defensive fallback for unusual bundling orders.
+    // @ts-ignore
+    const g: any = (typeof window !== "undefined" ? window : globalThis) as any;
+    if (typeof g.setWorld === "function") g.setWorld({ ...next });
+  }
+}
