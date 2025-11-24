@@ -1,17 +1,20 @@
-// src/components/Modal.tsx
-import React from "react";
+import React from 'react'
 
-export const Modal: React.FC<{open:boolean,onClose:()=>void,title?:string,children?:any}> = ({open,onClose,title,children}) => {
-  if (!open) return null;
+type Props = {
+  title: string
+  onClose: () => void
+  children: React.ReactNode
+}
+export default function Modal({ title, onClose, children }: Props) {
   return (
-    <div className="sg-modal-backdrop" onClick={onClose}>
-      <div className="sg-modal" onClick={e=>e.stopPropagation()}>
-        <div className="sg-modal__header">
-          <strong>{title||"Modal"}</strong>
-          <button className="sg-btn" onClick={onClose}>✖</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-xl shadow-xl w-[min(680px,92vw)] p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">{title}</h2>
+          <button aria-label="Close" onClick={onClose} className="px-2 py-1 rounded hover:bg-gray-100">✕</button>
         </div>
-        <div className="sg-modal__body">{children}</div>
+        <div>{children}</div>
       </div>
     </div>
-  );
-};
+  )
+}

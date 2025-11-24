@@ -1,72 +1,40 @@
-import { getWorld, nudgeWorld } from "./time";
-import { nextBashoStartAfter } from "./basho";
+
+import { getWorld, setWorld, emitWorldChange } from './time'
+import { nextBashoStartAfter } from './basho'
 
 export const stopModes = {
-  BASHO_MONTH_DAY1: "BASHO_MONTH_DAY1",
-  NONE: "NONE",
-} as const;
+  BASHO_MONTH_DAY1: 'BASHO_MONTH_DAY1',
+  NONE: 'NONE'
+} as const
+export type StopMode = typeof stopModes[keyof typeof stopModes]
 
-export type StopMode = typeof stopModes[keyof typeof stopModes];
-
-let _isSkipping = false;
-let _isPaused = false;
-let _mode: StopMode = stopModes.NONE;
-let _target: { year: number; month: number; week: number; day: number } | null = null;
-
-export function isSkipping() { return _isSkipping; }
-export function isPaused()   { return _isPaused; }
-export function getStopMode(): StopMode { return _mode; }
-
-// Kept for HeaderBar.tsx compatibility
-export function setStopMode(mode: StopMode) {
-  const values = Object.values(stopModes) as StopMode[];
-  _mode = values.includes(mode) ? mode : stopModes.NONE;
+let _stopMode: StopMode = stopModes.BASHO_MONTH_DAY1
+export function getStopMode(): StopMode { return _stopMode }
+export function toggleStopMode(): StopMode {
+  _stopMode = _stopMode === stopModes.NONE ? stopModes.BASHO_MONTH_DAY1 : stopModes.NONE
+  emitWorldChange()
+  return _stopMode
 }
 
-function key(w: { year: number; month: number; week: number; day: number }) {
-  return ((((w.year * 12) + (w.month - 1)) * 4 + (w.week - 1)) * 7 + (w.day - 1));
+export function addDay() {
+  const w = getWorld()
+  let day = w.day + 1
+  let month = w.month
+  let year = w.year
+  if (day > 30) { day = 1; month += 1 }
+  if (month > 12) { month = 1; year += 1 }
+  setWorld({ ...w, year, month, day })
 }
-function reachedOrPast(a: any, b: any) { return key(a) >= key(b); }
 
-// Do NOT suppress side-effects; HUD must observe this.
-function jumpTo(target: { year: number; month: number; week: number; day: number }) {
-  nudgeWorld({ ...target });
+export function addWeek() {
+  for (let i=0;i<7;i++) addDay()
 }
 
-export function pauseSkip()  { _isPaused = true; }
+export function nextBasho() {
+  const next = nextBashoStartAfter(getWorld())
+  setWorld(next)
+}
+
 export function cancelSkip() {
-  _isPaused = false;
-  _isSkipping = false;
-  _mode = stopModes.NONE;
-  _target = null;
-}
-
-export function nextBasho(): void {
-  const cur = getWorld();
-
-  // Always target a basho month strictly AFTER the current month
-  const target = nextBashoStartAfter(cur.year, cur.month); // -> {year,month,week:1,day:1}
-  if (!target) return;
-
-  const safeTarget = reachedOrPast(cur, target)
-    ? {
-        year: target.month === 12 ? target.year + 1 : target.year,
-        month: target.month === 12 ? 1 : target.month + 1,
-        week: 1,
-        day: 1,
-      }
-    : target;
-
-  _isSkipping = true;
-  _isPaused   = false;
-  _mode       = stopModes.BASHO_MONTH_DAY1;
-  _target     = safeTarget;
-
-  // Single atomic jump that also broadcasts a 'world:change' event
-  jumpTo(_target);
-
-  _isSkipping = false;
-  _isPaused   = false;
-  _mode       = stopModes.NONE;
-  _target     = null;
+  emitWorldChange()
 }
